@@ -2,15 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes verticalRoll {
-  0% {
-    transform: translateY(0);
+@layer utilities {
+  @keyframes sparkle {
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 15px rgba(255, 255, 255, 0.8), 0 0 20px #ffd700, 0 0 30px #ffd700;
+    }
+    40% {
+      color: #ffd700;
+      text-shadow: 0 0 5px rgba(255, 255, 255, 0.6),
+        0 0 10px rgba(255, 255, 255, 0.6), 0 0 15px #ffd700;
+    }
   }
-  100% {
-    transform: translateY(-100%); /* 必要な移動距離 */
+  .sparkling-text {
+    animation: sparkle 1.5s infinite alternate;
   }
-}
-
-.roulette-content {
-  animation: verticalRoll 5s linear infinite;
 }

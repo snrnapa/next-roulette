@@ -1,66 +1,76 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
+import { RouletteText } from "./ui/CustomText";
 
-export default function Home() {
-  const [items, setItems] = useState([
-    // "藤岡弘",
-    // "阿部寛",
-    // "五木ひろし",
-    // "ヒロシ",
-    // "なかやまきんに君",
-    "+90kg",
-    "-90kg",
-    "+80kg",
-    "-80kg",
-    "+700kg",
-    "-700kg",
+const Roulette = () => {
+  const [items] = useState<string[]>([
+    "藤岡弘",
+    "阿部寛",
+    "五木ひろし",
+    "ヒロシ",
+    "なかやまきんに君",
   ]);
-  const [nameInput, setNameInput] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [positionX, setPositionX] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isSelected, setIsSelected] = useState(false);
-  const [isOneMove, setIsOneMove] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDefine, setIsDefine] = useState(false);
+  const [positionY, setPositionY] = useState<number>(0);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const [isRunning, setIsRunning] = useState<boolean>(false);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null); // ルーレットの動作管理
 
   const screenWidth = typeof window !== "undefined" ? window.innerWidth : 960;
 
-  // useEffect(() => {
-  //   let timer;
-  //   if (isRunning) {
-  //     timer = setInterval(() => {
-  //       setPositionX((prev) => {
-  //         if (prev >= screenWidth) {
-  //           setCurrentIndex((prevIndex) =>
-  //             prevIndex >= names.length - 1 ? 0 : prevIndex + 1
-  //           );
-  //           return 0;
-  //         }
-  //         return prev + 60;
-  //       });
-  //     }, 5);
-  //   } else {
-  //     clearInterval(timer);
-  //   }
-  //   return () => clearInterval(timer);
-  // }, [isRunning, items.length, screenWidth]);
+  // トグル関数
+  const toggle = () => {
+    if (isRunning) {
+      stop(); // 停止処理を実行
+    } else {
+      move(); // 開始処理を実行
+    }
+    setIsRunning(!isRunning);
+  };
+
+  // ルーレットを動かす関数
+  const move = () => {
+    if (intervalRef.current) return; // 二重実行防止
+    intervalRef.current = setInterval(() => {
+      setPositionY((prev) => {
+        if (prev >= screenWidth) {
+          setCurrentIndex((prevIndex) =>
+            prevIndex >= items.length - 1 ? 0 : prevIndex + 1
+          );
+          return 0;
+        }
+        return prev + 60;
+      });
+    }, 16); // 速度調整
+  };
+
+  // ルーレットを停止する関数
+  const stop = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // タイマー停止
+      intervalRef.current = null; // リファレンスをリセット
+      setPositionY(0); // ポジションをリセット
+    }
+  };
 
   return (
-    <div className="min-h-screen h-80 overflow-hidden  relative flex flex-col justify-center">
-      <div className="roulette-content flex flex-col space-y-4 ">
-        {items.map((item, index) => (
+    <div className="flex h-screen bg-gradient-to-b from-blue-900 via-blue-800 to-blue-950 ">
+      <button className="h-screen w-screen" onClick={toggle}>
+        <div className=" text-center w-screen h-screen  items-center flex flex-col justify-center relative overflow-hidden">
           <div
-            key={index}
-            className="text-2xl font-semibold text-center p-4  text-white  shadow-md tracking-widest  "
+            className="absolute"
+            style={{
+              transform: `translateY(${positionY}px)`,
+            }}
           >
-            {item}
+            <RouletteText index={currentIndex}>
+              {items[currentIndex]}
+            </RouletteText>
           </div>
-        ))}
-      </div>
-      <button className="btn glass">開始</button>
+        </div>
+      </button>
     </div>
   );
-}
+};
+
+export default Roulette;
