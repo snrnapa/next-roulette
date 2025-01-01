@@ -16,7 +16,7 @@ export const RouletteText = ({
           <p
             className={`${
               isSelected ? "scale-125 transition-all duration-500" : ""
-            } font-bold text-5xl text-sky-400`}
+            } font-bold text-3xl sm:text-5xl h-full w-full text-sky-400`}
           >
             {children}
           </p>
@@ -26,7 +26,7 @@ export const RouletteText = ({
           <p
             className={`${
               isSelected ? "scale-125 transition-all duration-500" : ""
-            } font-bold text-5xl text-white`}
+            } font-bold text-3xl sm:text-5xl text-white`}
           >
             {children}
           </p>
